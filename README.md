@@ -3,6 +3,8 @@
 PordoTech 组织官网：Pordo 产品介绍、下载页与中英文使用文档。
 技术栈：Astro + Starlight，静态输出，GitHub Pages 部署。
 
+线上地址：https://pordotech.github.io/
+
 - 中文为根目录（`/`），英文在 `/en/`；文档路径统一以 `/` 结尾（`trailingSlash: 'always'`）。
 - 首页与下载页是自定义 Astro 页面；`/docs/`、`/guides/*`、`/developers/` 由 Starlight 内容集合生成。
 - 下载页数据只来自 `PordoTech/pordo` 的 GitHub Releases（latest stable），不拼接猜测链接，不使用 token。
@@ -105,8 +107,8 @@ npm test          # node --test tests/*.test.ts（下载解析逻辑单元测试
   若迁移到子路径，设置 `SITE_URL` / `BASE_PATH` 环境变量（`astro.config.mjs` 读取）。
 - `.github/workflows/deploy.yml`：`actions/checkout@v4` → `withastro/action@v3`
   （Node 24，`npm ci` + build）→ `actions/deploy-pages@v4`。
-- 启用方式（需要发布授权后执行）：仓库 Settings → Pages → Source 选择
-  “GitHub Actions”。本轮实施仅本地交付，不创建远端、不推送、不启用。
+- 仓库已启用 GitHub Pages，Source 为“GitHub Actions”；推送到 `main`
+  后自动构建并部署。首次上线日期：2026-10-31。
 
 ## 内容更新流程
 

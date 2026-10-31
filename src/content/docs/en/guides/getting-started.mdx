@@ -1,0 +1,97 @@
+---
+title: Getting Started
+description: First steps after installing Pordo — opening files, basic controls, music and comics, and platform differences.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="note" title="Platforms and verification">
+Applies to: Windows · macOS · Android (differences noted below). Verified on
+2026-10-31 against pordo main branch `893459a` and the v0.5.1 release materials.
+</Aside>
+
+This page assumes Pordo is already installed. If not, start with
+[Install & Update](/en/guides/install-update/) or the [download page](/en/download/).
+
+## Opening your first media
+
+1. Launch Pordo.
+2. Open local files in either way:
+   - Use the app's open-files entry to select one or more files;
+   - Drag and drop files onto the window.
+3. Expected result: the app picks music or video mode from the media tracks and
+   starts playing. Music mode shows available title, artist, album, cover art
+   and lyrics.
+
+<Aside type="tip">
+A normal open/drop replaces the current queue; **Add Files** or Shift-drop
+appends to it. Music and video queues are saved independently. Removing an item
+from a queue never deletes its file.
+</Aside>
+
+If opening fails:
+
+- When a video codec is unsupported, the app reports a clear error instead of
+  failing silently. The primary verified path is H.264 in MP4/MKV; see
+  [Music & Video](/en/guides/music-video/).
+- If macOS blocks the first launch, follow the allow steps in
+  [Install & Update](/en/guides/install-update/#macos-signing-and-first-launch).
+
+## Basic controls and shortcuts
+
+| Shortcut | Action |
+| --- | --- |
+| Space | Pause/resume playback |
+| Left / Right | Seek during playback; turn pages in the comic reader |
+| M | Mute/unmute |
+| F11 | Toggle full screen |
+| Esc | Leave full screen before other back actions |
+| F / double-click | Toggle full screen during video playback |
+
+Video and comic toolbars appear when the pointer approaches the window edges;
+music controls stay visible.
+
+## Reading comics
+
+1. Open the comics page.
+2. Search MangaYun or Komiic. The two sources stay separate even when titles match.
+3. Open a title, pick a chapter and start reading; add books to your bookshelf to
+   check updates and resume from history.
+
+See [Reading Comics](/en/guides/comics/) for details.
+
+## Optional: AI services and WebDAV
+
+Local playback and comic reading need no AI account. Everything below is optional:
+
+- **AI subtitles / AI lyrics / comic translation** (desktop only): configure a
+  compatible AI provider in Settings first; the service may charge per request.
+  See the [AI guide](/en/guides/ai/).
+- **Online music** (desktop only): configure the music-source API key in
+  Settings. See [Online Music](/en/guides/online-music/).
+- **WebDAV sync** (all platforms): sync settings, favorites and progress through
+  your own storage. See [WebDAV Sync](/en/guides/webdav-sync/).
+
+<Aside type="caution">
+AI features send audio segments or comic page images to the provider you
+configure, which may bill for requests. Online music sources and comic sources
+depend on third-party service availability.
+</Aside>
+
+## Platform differences
+
+| Item | Desktop (Windows / macOS) | Android |
+| --- | --- | --- |
+| Feature scope | Music, video, comics, online sources, magnets, AI, sync | Music, comics, favorites, progress, WebDAV sync |
+| UI languages | Chinese / English | — |
+| Updates | In-app update check on Windows; Releases on macOS | Download the APK from Releases and install over the old one |
+| Credentials | Windows Credential Manager / macOS Keychain | Android KeyStore |
+
+The Android app currently has no video, AI-subtitle or comic-translation UI;
+see [Android App](/en/guides/android/).
+
+## Next steps
+
+- Queues, favorites, lyrics and playback details: [Music & Video](/en/guides/music-video/)
+- Installing, updating and migrating: [Install & Update](/en/guides/install-update/)
+- Troubleshooting: [FAQ](/en/guides/faq/)

@@ -1,0 +1,86 @@
+---
+title: Online Music
+description: Configure the music-source API key, stream while downloading, save tracks, and handle sidecar files and QQ Music encrypted files.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="note" title="Platforms and verification">
+Applies to: Windows · macOS (online-source capability on Android has not been
+verified, so this site makes no claim; online-track favorites can sync via
+WebDAV). Verified on 2026-10-31 against pordo main branch `893459a` and the
+v0.5.1 release materials.
+</Aside>
+
+<Aside type="caution">
+Online music depends on third-party services: catalog, quality and
+downloadability are decided upstream. A network connection is required.
+</Aside>
+
+## Configuring the music source
+
+1. Open **Settings → Music**.
+2. Enter the music-source service API key and save.
+3. Expected result: you can search the three services exposed by the ChKSz
+   adapter — NetEase Cloud Music, QQ Music and Kugou.
+
+If search returns nothing or playback fails: confirm the API key is valid, then
+check whether the specific track reports “quality unavailable” — the app reports
+unavailable quality explicitly instead of silently substituting another one.
+
+## Streaming and downloading
+
+| Action | Behavior |
+| --- | --- |
+| **Play** | Starts playback while downloading when the source permits it |
+| **Download** | Saves a complete file to the download directory |
+
+- Existing downloads are reused instead of downloading again.
+- The download directory is configurable; completed files remain there after
+  playback.
+- Favorited online tracks appear on other devices through WebDAV sync (metadata
+  first; download to play).
+
+## Sidecar files: keep them with your audio
+
+Downloaded music may have these companion files beside it:
+
+| File | Contents |
+| --- | --- |
+| `.pordo.json` | Track metadata (older versions wrote `.replayer.json`, still readable) |
+| `.pordo-cover.png` | Cover art (older `.replayer-cover.png` still readable) |
+| `.lrc` | Lyrics (including saved AI-generated lyrics) |
+
+This information may not be embedded in the audio file itself. When moving or
+backing up downloaded music, keep the same-named sidecars; losing them can drop
+cover art, metadata and lyrics.
+
+## QQ Music encrypted local files
+
+Some QMC / MFLAC / MGG variants can be played:
+
+1. Open the file directly. If the player requests a song key (ekey):
+   - choose **Import song key and retry**; or
+   - place the Base64 ekey beside the media as a file like `song.mflac.ekey`,
+     retaining the original extension.
+2. Expected result: the track decrypts and plays. This is a **per-song** key; the
+   app never reads your account credentials and never extracts keys from other
+   applications.
+
+Support scope:
+
+- Legacy QMC1 and supported QMC2 Map/RC4 variants can be opened.
+- Some metadata-only variants require an external ekey.
+- EncV2 and unknown footer versions are **unsupported**; the file extension alone
+  does not establish compatibility.
+- Encrypted files obtained through magnets must finish downloading before local
+  playback.
+
+## Common failures
+
+| Symptom | Fix |
+| --- | --- |
+| No search results | Check the API key and network; retry later during upstream outages |
+| “Quality unavailable” | Pick another track or quality; the app will not downgrade silently |
+| Missing cover art or lyrics | Confirm the sidecar files sit beside the audio with matching names |
+| Encrypted file won't open | Compare against the support scope above; EncV2 is not supported |

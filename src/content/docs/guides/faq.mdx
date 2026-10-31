@@ -1,0 +1,137 @@
+---
+title: 常见问题
+description: 播放、书源、AI、更新与同步常见问题的排查入口。
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="note" title="适用平台与核对依据">
+适用平台：Windows · macOS · Android（各条目内注明差异）。内容依据 pordo 仓库
+main 分支 `893459a` 与 v0.5.1 发布资料于 2026-10-31 核对。
+</Aside>
+
+## 播放问题
+
+### 视频打不开或报编解码器不支持
+
+当前主验证路径是 MP4/MKV 中的 H.264；macOS 另支持 VideoToolbox 的
+H.264/HEVC（8-bit SDR）。不支持的编解码器会返回明确错误，不会静默换后端。
+详见[音乐与视频](/guides/music-video/#编解码支持范围)。
+
+### 有画面没有声音
+
+1. 按 **M** 确认没有静音。
+2. 检查系统输出设备。
+3. Dolby 音轨的可用性取决于系统已安装的组件。
+
+### 进度条拖动后长时间缓冲
+
+- 磁力播放：等待请求位置附近的数据完成下载与校验；peer 少或代理拦截 BT 时更慢
+  （见[磁力链接播放](/guides/magnet/)）。
+- 远程纯 MPEG 音频：使用近似字节定位，VBR 精度有限。
+- Windows 播放 FLAC：目前从头预卷，长文件跳转等待随目标位置增长
+  （见[音乐与视频](/guides/music-video/#进度条与定位的已知限制)）。
+
+## 在线内容问题
+
+### 在线音源搜索失败或提示音质不可用
+
+检查 **设置 → 音乐** 中的 API Key 与网络连接；可用性由上游服务决定，音质
+不可用时应用会明确报告而不是静默降级。见[在线音源](/guides/online-music/)。
+
+### 书源不可用、图片加载失败
+
+- 上游波动或图片配额用尽时可能暂时失败；已缓存页面仍可读。
+- 配置 Komiic 账号可获得账号级配额（见[漫画阅读](/guides/comics/#komiic-账号可选)）。
+- 部分书源需要适配器更新；持续失败可在
+  [Issues](https://github.com/PordoTech/pordo/issues) 查看或反馈。
+
+### QQ 音乐加密文件打不开
+
+QMC1 与受支持的 QMC2 Map/RC4 变体可打开；部分变体需要导入逐曲 ekey；
+EncV2 与未知 footer 版本不支持。磁力下载的加密文件需先完整下载。
+见[在线音源](/guides/online-music/#qq-音乐本地加密文件)。
+
+## AI 问题
+
+### 字幕/歌词生成失败、中断或有空隙
+
+1. 确认 **AI 字幕** 下选择了支持音频输入的模型；漫画翻译需要图像编辑模型。
+2. 检查服务商额度与网络；TUN/代理环境按[磁力指南](/guides/magnet/#网络与代理tun系统代理环境)调整路由。
+3. 失败段落会留下空隙；结果请人工核对。
+
+### 重启后字幕不见了
+
+生成的字幕不自动保存；关闭或切换媒体前请导出 SRT。见 [AI 指南](/guides/ai/#ai-字幕)。
+
+### 取消了生成还会被扣费吗
+
+取消只停止本地等待；已被服务商接受的请求可能仍计费。见
+[AI 指南的数据发送与计费说明](/guides/ai/)。
+
+## 安装与更新问题
+
+### macOS 提示无法验证开发者
+
+当前 macOS 包为 ad-hoc 签名、未公证。前往 **系统设置 → 隐私与安全性** 放行。
+见[安装与更新](/guides/install-update/#macos-签名与首次启动)。
+
+### Windows 检查不到新版本
+
+仓库已迁移到 `PordoTech/pordo`，v0.5.1 及更早的 Windows 客户端仍按旧地址校验
+更新。第一个新版本发布后请手动从 Releases 安装一次，之后恢复应用内更新。
+见[安装与更新](/guides/install-update/#windows安装与更新)。
+
+### Android 覆盖安装失败
+
+测试签名包不能升级为正式签名包：先同步/备份数据 → 卸载 → 安装正式版。
+设备需为 arm64、Android 9+。见 [Android 客户端](/guides/android/#签名与更新)。
+
+### 如何校验下载文件
+
+Releases 提供各平台 `SHA256SUMS-*.txt` 与汇总文件。注意校验和只证明文件
+完整性；当前安装包没有发布者签名。见[安装与更新](/guides/install-update/#校验安装包)。
+
+## 同步问题
+
+### API Key 没有同步到其他设备
+
+API Key 默认不上传。两端都需启用 Key 同步并填写相同的独立同步口令
+（至少 12 字符）；口令错误时写入会被停止而不是覆盖。见
+[WebDAV 云同步](/guides/webdav-sync/#api-key-同步可选默认关闭)。
+
+### 收藏或进度没同步
+
+确认两端使用同一 WebDAV 账号并已启用同步；离线修改会在重连后合并；正在
+播放/阅读的位置不会被远端强制跳转。见
+[WebDAV 云同步](/guides/webdav-sync/#冲突与离线处理)。
+
+### Komiic 账号会同步吗
+
+不会。Komiic 账号、密码与会话 Cookie 不参与 WebDAV / API Key 同步，需在
+每台设备单独登录。
+
+## 数据与磁盘
+
+### 应用数据在哪里
+
+Windows：`%LOCALAPPDATA%/pordo`；macOS：`~/.config/pordo`（受
+`XDG_CONFIG_HOME` 影响）。旧 `replayer` 目录中的配置自动复用。见
+[WebDAV 云同步](/guides/webdav-sync/#本地数据位置与空间)。
+
+### 磁盘占用持续增长
+
+下载与缓存不会自动清理：磁力缓存需停止任务后手动删除；音乐下载保留在下载
+目录（含 sidecar 文件）。
+
+## 其他
+
+### 如何反馈问题
+
+在 [Issues](https://github.com/PordoTech/pordo/issues) 提交，附上平台、应用
+版本、操作步骤与错误信息。涉及账号或密钥的内容请先脱敏。
+
+### Pordo 和 replayer 是什么关系
+
+同一产品：replayer 已更名为 Pordo。旧配置目录、sidecar 文件与已发布标识保持
+兼容，见[安装与更新](/guides/install-update/#从-replayer-升级)。

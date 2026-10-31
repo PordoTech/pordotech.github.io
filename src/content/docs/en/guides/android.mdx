@@ -1,0 +1,95 @@
+---
+title: Android App
+description: Android 9+ arm64 installation, feature scope, signing and updates, Komiic account and cloud sync entry points.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="note" title="Platforms and verification">
+Applies to: arm64 devices running Android 9 (API 28) or later. Verified on
+2026-10-31 against pordo main branch `893459a`, the v0.5.1 release materials and
+the Android documentation.
+</Aside>
+
+The Android app shares the same Rust core (`pordo-core`) as the desktop clients
+and provides music playback, comic reading and desktop-compatible WebDAV sync.
+Its first official release shipped with v0.5.1.
+
+## Feature scope
+
+| Available | Not available (current version) |
+| --- | --- |
+| Music playback; online-track favorites and favorite lists | Video playback UI |
+| Comic search and reading (search uses Komiic first); desktop-synced comics route by provider | AI subtitle UI |
+| WebDAV sync (settings, favorites, progress — shared with desktop) | Comic translation UI |
+| Komiic account sign-in (auto sign-in, session refresh, sign-out) | AI lyrics (not verified — no claim) |
+| Credentials protected by Android KeyStore; `allowBackup` off | Magnet playback |
+
+The range of Android UI languages has not been verified; this site makes no claim.
+
+## Installing
+
+1. Download `…-android-arm64-v8a.apk` from
+   [Releases](https://github.com/PordoTech/pordo/releases) (the v0.5.1 asset is
+   named `replayer-0.5.1-android-arm64-v8a.apk`).
+2. Allow installs from unknown sources, then install the APK.
+3. Expected result: the app starts and completes native initialization; on
+   failure an initialization error screen is shown instead of silently
+   degrading.
+
+Device requirements: Android 9+, arm64. Other ABIs and older systems are
+unsupported.
+
+## Signing and updates
+
+- Official packages use a **persistent release signing key**; later versions
+  share the key and install directly over the existing app.
+- The certificate SHA-256 is pinned in the repository at
+  [`android/release-certificate.sha256`](https://github.com/PordoTech/pordo/blob/main/android/release-certificate.sha256),
+  and releases include the `SHA256SUMS-android-arm64-v8a.txt` checksum file.
+- Update path: download the new APK from Releases and install over the old one
+  (there is no in-app update channel yet).
+
+<Aside type="caution" title="Migrating from test-signed builds">
+Earlier development/test builds used a test signature and **cannot** be upgraded
+to the release signature in place — an over-install fails with a signature
+conflict. Sync or back up your data first → uninstall the test build → install
+the official APK.
+</Aside>
+
+## Komiic account
+
+Entry point: comics page → **Source settings**.
+
+1. Enter the registered email and password, enable **auto sign-in**, then choose
+   **Save and sign in**.
+2. The app shows nickname, sign-in status and image quota; without an account it
+   stays in guest mode.
+3. **Sign out and clear password** keeps the email, disables auto sign-in and
+   deletes the local password.
+
+The password and cookies live in KeyStore-protected encrypted storage, never in
+plaintext config, and are not part of cloud sync. The desktop entry point is
+described in [Reading Comics](/en/guides/comics/#komiic-account-optional).
+
+## Cloud sync
+
+Entry point: **Cloud sync** at the top right of the music or comics page. Setup,
+sync scope, the separate API-key passphrase and conflict handling are covered in
+[WebDAV Sync](/en/guides/webdav-sync/). Android-specific behavior:
+
+- Sync runs on launch, on return to foreground and on manual trigger; every 5
+  minutes in the foreground; no persistent background service.
+- Online-track favorites from other devices show metadata first; download to play.
+- Reading progress shares the desktop meaning (the fraction marks the position
+  within the current page).
+- The position being played or read is never force-jumped by remote progress.
+
+## Common failures
+
+| Symptom | Fix |
+| --- | --- |
+| Install fails | Confirm arm64 and Android 9+; on signature conflicts uninstall the old test build first |
+| Initialization error at launch | Note the error details and report them in [Issues](https://github.com/PordoTech/pordo/issues) |
+| All HTTPS requests fail | Check the device clock; the known TLS issue in early test builds is fixed in the official release |
+| Desktop features missing | Video/AI/translation UIs are desktop-only for now; see the feature scope above |

@@ -1,0 +1,79 @@
+---
+title: Android 客户端
+description: Android 9+ arm64 安装、功能范围、签名与更新、Komiic 账号与云同步入口。
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="note" title="适用平台与核对依据">
+适用平台：Android 9（API 28）及以上 arm64 设备。内容依据 pordo 仓库 main 分支
+`893459a`、v0.5.1 发布资料与 Android 文档于 2026-10-31 核对。
+</Aside>
+
+Android 端与桌面端共用同一个 Rust 核心（`pordo-core`），提供音乐播放、漫画阅读
+和与桌面兼容的 WebDAV 云同步。首个正式版本随 v0.5.1 发布。
+
+## 功能范围
+
+| 提供 | 不提供（当前版本） |
+| --- | --- |
+| 音乐播放、在线歌曲收藏与收藏列表 | 视频播放界面 |
+| 漫画搜索与阅读（搜索优先使用 Komiic）；从桌面同步的漫画按提供商路由 | AI 字幕界面 |
+| WebDAV 云同步（设置、收藏、进度，与桌面互通） | 漫画翻译界面 |
+| Komiic 账号登录（自动登录、会话刷新、退出） | AI 歌词（未核实，不作宣称） |
+| 凭据由 Android KeyStore 保护；`allowBackup` 关闭 | 磁力链接播放 |
+
+Android 界面语言支持范围未核实，本站不作宣称。
+
+## 安装
+
+1. 从 [Releases](https://github.com/PordoTech/pordo/releases) 下载
+   `…-android-arm64-v8a.apk`（v0.5.1 的文件名为
+   `replayer-0.5.1-android-arm64-v8a.apk`）。
+2. 允许安装未知来源应用后安装 APK。
+3. 预期结果：应用启动并完成原生初始化；失败时会显示初始化错误页而不是静默降级。
+
+设备要求：Android 9+、arm64。其他 ABI 或更旧系统不受支持。
+
+## 签名与更新
+
+- 正式包使用**长期固定的发布签名密钥**；后续版本使用同一密钥，可直接覆盖安装。
+- 签名证书 SHA-256 固定在仓库
+  [`android/release-certificate.sha256`](https://github.com/PordoTech/pordo/blob/main/android/release-certificate.sha256)，
+  发布附件同时提供 `SHA256SUMS-android-arm64-v8a.txt` 校验文件。
+- 更新方式：从 Releases 下载新 APK 覆盖安装（当前没有应用内更新通道）。
+
+<Aside type="caution" title="从测试签名包迁移">
+此前的开发/测试包使用测试签名，**不能**直接升级为正式签名版本，覆盖安装会因
+签名冲突失败。请先通过 WebDAV 同步或自行备份数据 → 卸载测试版 → 安装正式版。
+</Aside>
+
+## Komiic 账号
+
+入口：漫画页 → **源设置**。
+
+1. 填写注册邮箱和密码，选择**自动登录**，点击**保存并登录**。
+2. 显示昵称、登录状态与图片用量；未配置账号时为游客模式。
+3. **退出并清除密码**保留邮箱、关闭自动登录并删除本机密码。
+
+密码与 Cookie 存储在 KeyStore 保护的加密凭据中，不写明文配置，也不参与云同步。
+桌面端入口见[漫画阅读](/guides/comics/#komiic-账号可选)。
+
+## 云同步
+
+入口：音乐页或漫画页右上角**云同步**。配置步骤、同步范围、API Key 独立口令与
+冲突处理见 [WebDAV 云同步](/guides/webdav-sync/)，Android 特有行为：
+
+- 同步时机为启动、回到前台与手动触发；前台每 5 分钟检查；无常驻后台服务。
+- 跨设备在线歌曲收藏先显示元数据，下载后播放。
+- 阅读进度与桌面共用同一含义（fraction 表示当前页内位置）。
+- 正在播放/阅读的位置不会被远端进度强制跳转。
+
+## 常见失败与处理
+
+| 现象 | 处理 |
+| --- | --- |
+| 安装失败 | 确认 arm64 与 Android 9+；签名冲突时先卸载旧测试包 |
+| 启动显示初始化错误 | 记录错误详情并在 [Issues](https://github.com/PordoTech/pordo/issues) 反馈 |
+| HTTPS 请求全部失败 | 确认系统时间正确；早期测试包的已知 TLS 问题在正式版已修复 |
+| 桌面功能缺失 | 视频/AI/翻译界面当前仅桌面提供，见上文功能范围 |

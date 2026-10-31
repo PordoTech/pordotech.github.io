@@ -1,0 +1,94 @@
+---
+title: Reading Comics
+description: Search comic sources, manage the bookshelf and updates, reading modes and progress, Komiic account, cache and translation entry points.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="note" title="Platforms and verification">
+Applies to: Windows · macOS · Android (comic translation is desktop-only).
+Verified on 2026-10-31 against pordo main branch `893459a`, the v0.5.1 release
+materials and the Android documentation.
+</Aside>
+
+## Search and bookshelf
+
+1. Open the comics page and search the **MangaYun** or **Komiic** sources.
+2. The two sources stay separate: matching titles are not merged and results are
+   shown per source.
+3. Open a title, choose a chapter and start reading; add books to your bookshelf
+   to check for updates and resume from history.
+4. Komiic chapter lists can be filtered by chapter/volume type.
+
+A new favorite starts with the existing chapter list as its baseline; later
+unread additions produce update indicators.
+
+## Reading modes
+
+- Three modes: vertical scrolling, left-to-right pages, right-to-left pages.
+- Zoom, page position and reading progress are saved automatically.
+- The chapter button opens the chapter list; the page slider and previous/next
+  controls navigate within the book.
+- Keyboard Left / Right turn pages in the reader.
+- On Android, a chapter is marked read only after scrolling to the bottom of the
+  last decoded page; opening a chapter by itself never clears unread updates.
+
+## Komiic account (optional)
+
+Signing in provides account-level image quota and persistent sessions; without
+an account the app stays in guest mode.
+
+| Client | Entry point |
+| --- | --- |
+| Desktop | Settings → Comics → Komiic account |
+| Android | Comics page → “Source settings” |
+
+1. Enter the registered email and password, enable “auto sign-in”, then choose
+   “Save and sign in”.
+2. Expected result: nickname, sign-in status and the image quota returned by the
+   official site are displayed.
+3. With auto sign-in disabled you can still sign in manually for the session;
+   after a restart the app returns to guest mode.
+4. “Sign out and clear password” keeps the email, disables auto sign-in and
+   deletes the local password — even if the remote sign-out request fails, the
+   local session is gone.
+
+<Aside type="note">
+Credential storage: Windows Credential Manager, macOS system Keychain, and
+KeyStore-protected encrypted storage on Android. Passwords are never written to
+plaintext config or logs. The Komiic account, password and session cookies are
+**not** part of WebDAV / API-key sync.
+</Aside>
+
+## Cache
+
+- Original pages and covers are cached locally; cached pages stay readable when
+  a source is unavailable or its image quota is exhausted.
+- Clearing caches in Settings preserves translations, favorites and history.
+- Some upstream sources need adapter updates or are unsupported; for persistent
+  failures check or file
+  [Issues](https://github.com/PordoTech/pordo/issues).
+
+## Comic translation (desktop only)
+
+After adding a compatible service under **Settings → AI Providers** and choosing
+an **image-editing** model in the comic settings, you can translate a page or a
+whole chapter, with original, translated and side-by-side views. Translation is
+an explicit action and may incur service charges. Full steps and limits:
+[AI guide](/en/guides/ai/#comic-translation).
+
+The Android app currently has no comic-translation UI.
+
+## Cloud sync
+
+Comic favorites (including tracked titles you unfavorited), chapter lists,
+read/update markers and reading progress sync between desktop and Android via
+WebDAV; see [WebDAV Sync](/en/guides/webdav-sync/).
+
+## Common failures
+
+| Symptom | Fix |
+| --- | --- |
+| Source search fails or images won't load | Upstream outage, exhausted quota or an adapter update may be needed; cached pages stay readable |
+| Komiic sign-in fails | Verify email/password and account activation; after repeated failures the app pauses auto-retries — fix the credentials and retry manually |
+| Progress missing on another device | Confirm both ends use the same WebDAV account with sync enabled; see the sync guide's conflict and offline handling |

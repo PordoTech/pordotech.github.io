@@ -1,0 +1,61 @@
+---
+title: Docs
+description: Pordo documentation entry — installation, music, video, comics, AI and cloud sync guides.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="note" title="Verification basis">
+This documentation was verified on 2026-10-31 against the pordo repository
+main branch `893459a` and the v0.5.1 release materials. Differences between the
+released version and main are noted on the relevant pages.
+</Aside>
+
+Pordo brings music, video and comics together in one app: the Windows and macOS
+desktop clients offer the full feature set, and the Android app covers music,
+comics and cloud sync. You can optionally connect AI services (subtitles,
+lyrics, comic translation) and your own WebDAV storage.
+
+## Where to start
+
+1. [Install & Update](/en/guides/install-update/): pick the package for your platform, and learn how updates and macOS signing work.
+2. [Getting Started](/en/guides/getting-started/): open your first file, basic controls and platform differences.
+3. Then read the feature guides below as needed.
+
+You can also go straight to the [download page](/en/download/) for the current release.
+
+## Guide index
+
+| Guide | Contents | Platforms |
+| --- | --- | --- |
+| [Getting Started](/en/guides/getting-started/) | First run, opening files, basic controls | Windows · macOS · Android |
+| [Install & Update](/en/guides/install-update/) | Package types, requirements, updates, migration | Windows · macOS · Android |
+| [Music & Video](/en/guides/music-video/) | Local playback, queues, favorites, lyrics, shortcuts | Windows · macOS |
+| [Online Music](/en/guides/online-music/) | Source setup, streaming and downloads, sidecar files | Windows · macOS |
+| [Reading Comics](/en/guides/comics/) | Sources, bookshelf, reading modes, Komiic account, cache | Windows · macOS · Android |
+| [AI Subtitles, Lyrics & Translation](/en/guides/ai/) | Provider setup, SRT export, data sent and billing | Windows · macOS |
+| [WebDAV Sync](/en/guides/webdav-sync/) | Setup, sync scope, API-key encryption, conflicts | Windows · macOS · Android |
+| [Magnet Playback](/en/guides/magnet/) | Magnet tasks, stream-while-downloading, cache, networking | Windows · macOS |
+| [Android App](/en/guides/android/) | Install, signed updates, feature scope and limits | Android |
+| [FAQ](/en/guides/faq/) | Playback, sources, AI, updates and sync troubleshooting | All |
+
+## Platform overview
+
+“—” means the feature is not available in the current version, or has not been verified.
+
+| Feature | Windows x64 | macOS 15+ | Android 9+ arm64 |
+| --- | --- | --- | --- |
+| Music playback and favorites | Yes | Yes | Yes |
+| Video playback | Yes | Yes | — |
+| Comic reading and bookshelf | Yes | Yes | Yes |
+| Online music sources | Yes | Yes | — |
+| Magnet playback | Yes | Yes | — |
+| AI subtitles | Yes | Yes | — |
+| AI lyrics | Yes | Yes | — |
+| Comic translation | Yes | Yes | — |
+| WebDAV sync | Yes | Yes | Yes |
+
+## Developers
+
+Build, architecture, release and remdia SDK documentation lives in the
+repositories; see the [developer index](/en/developers/).

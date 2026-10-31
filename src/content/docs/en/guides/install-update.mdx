@@ -1,0 +1,120 @@
+---
+title: Install & Update
+description: Pordo package types, system requirements, update paths, macOS signing status and repository migration notes.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="note" title="Platforms and verification">
+Applies to: Windows · macOS · Android. Verified on 2026-10-31 against pordo main
+branch `893459a`, the v0.5.1 release materials and the release documentation.
+</Aside>
+
+Installers for every platform are published in the same
+[Releases](https://github.com/PordoTech/pordo/releases) feed. The site
+[download page](/en/download/) also links the assets of the current stable release.
+
+## Package types
+
+| Platform | Package | Notes |
+| --- | --- | --- |
+| Windows x64 | `…-windows-x86_64-setup.exe` | Per-user installer, defaults to `%LOCALAPPDATA%/Programs/pordo` |
+| Windows x64 | `…-windows-x86_64.zip` | Portable archive — extract and run |
+| macOS 15+ · Apple Silicon | `…-macos-aarch64.dmg` / `.zip` | DMG drag-to-install; ZIP contains `Pordo.app` |
+| macOS 15+ · Intel | `…-macos-x86_64.dmg` / `.zip` | Same as above |
+| Android 9+ · arm64 | `…-android-arm64-v8a.apk` | Release-signed APK |
+
+Assets of v0.5.1 and earlier use the `replayer-` filename prefix (for example
+`replayer-0.5.1-windows-x86_64-setup.exe`); later releases use the `pordo-`
+prefix per the release documentation. Both prefixes refer to the same product.
+
+## System requirements
+
+- **macOS**: 15 or later, on both Apple Silicon and Intel.
+- **Android**: 9 (API 28) or later, arm64 devices.
+- **Windows**: x64. The release materials do not state a minimum Windows
+  version, so this site does not claim one.
+
+## Windows: install and update
+
+1. Run the installer, or extract the portable ZIP to any directory.
+2. The installer does not replace user settings or downloaded media.
+3. Updates: check, download and install from **Settings → About** inside the app.
+   Update discovery uses GitHub's latest stable release and verifies the expected
+   versioned filename, trusted URL, size and SHA-256 asset digest before
+   installing; checks never install silently. Update logs live in the user's
+   `pordo/updates/VERSION/` directory.
+
+<Aside type="caution" title="Repository migration (important)">
+The repository moved to `PordoTech/pordo`. **Windows clients through v0.5.1 still
+validate updates against the former repository path**, so they cannot discover
+newer versions automatically. When the first newer version is released, download
+and install it manually once from
+[Releases](https://github.com/PordoTech/pordo/releases); updated clients use the
+new location and in-app updates resume.
+</Aside>
+
+## macOS signing and first launch
+
+- Published macOS packages are **ad-hoc signed and not notarized** with a
+  Developer ID.
+- macOS may block the first launch: open **System Settings → Privacy & Security**
+  and choose to open the app anyway at the security prompt.
+- Install: open the DMG and drag `Pordo.app` into Applications, or extract the
+  ZIP and move the app yourself.
+- Updates: there is no in-app update on macOS; download new versions from
+  [Releases](https://github.com/PordoTech/pordo/releases).
+- Export any generated subtitles before restarting the app (see the
+  [AI guide](/en/guides/ai/)).
+
+## Android: install and signed updates
+
+1. Download `…-android-arm64-v8a.apk` from Releases.
+2. Allow installs from unknown sources on the device, then install the APK.
+3. Later versions use the same persistent release signing key, so updates install
+   directly over the existing app.
+
+<Aside type="caution" title="Test-signed builds cannot upgrade in place">
+Earlier development/test builds used a test signature and **cannot** be upgraded
+to the release signature in place. If you installed a test build: sync or back up
+your data first → uninstall the test build → install the official APK. Versions
+sharing the release signature update normally.
+</Aside>
+
+The release certificate's SHA-256 is pinned in the repository at
+[`android/release-certificate.sha256`](https://github.com/PordoTech/pordo/blob/main/android/release-certificate.sha256)
+so you can verify where an APK came from.
+
+## Verifying packages
+
+Each release ships per-platform SHA-256 manifests (such as
+`SHA256SUMS-windows-x86_64.txt` and `SHA256SUMS-android-arm64-v8a.txt`) plus a
+combined `SHA256SUMS.txt`.
+
+<Aside type="note">
+Checksums prove the download is intact and unmodified. The Windows and macOS
+packages currently carry **no** Authenticode / Developer ID publisher signature,
+so hashes verify integrity, not publisher identity.
+</Aside>
+
+## Upgrading from replayer
+
+The product was renamed from replayer to Pordo. When upgrading:
+
+- Existing settings are kept: Windows data normally lives in
+  `%LOCALAPPDATA%/pordo`, macOS in `~/.config/pordo` (a configured
+  `XDG_CONFIG_HOME` changes that location); existing profiles in the matching
+  `replayer` directories are reused automatically.
+- On macOS, quit the old `replayer.app` and remove its app bundle after
+  installing Pordo.
+- `.replayer.json` / `.replayer-cover.png` sidecars from old downloads remain
+  readable; new writes use `.pordo.json` / `.pordo-cover.png`.
+
+## Common failures
+
+| Symptom | Fix |
+| --- | --- |
+| macOS cannot verify the developer | See [signing and first launch](#macos-signing-and-first-launch) and allow the app in Privacy & Security |
+| Windows finds no new version | Clients through v0.5.1 check the former repository; install the first newer version manually from Releases |
+| Android install fails or reports a signature conflict | Confirm arm64 and Android 9+; uninstall any test-signed build before installing the official APK |
+| Checksum mismatch | Re-download; if it persists, report it in [Issues](https://github.com/PordoTech/pordo/issues) |

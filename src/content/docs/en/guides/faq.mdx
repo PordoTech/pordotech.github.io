@@ -1,0 +1,159 @@
+---
+title: FAQ
+description: Troubleshooting entry points for playback, sources, AI, updates and sync problems.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="note" title="Platforms and verification">
+Applies to: Windows · macOS · Android (per-entry differences noted). Verified on
+2026-10-31 against pordo main branch `893459a` and the v0.5.1 release materials.
+</Aside>
+
+## Playback
+
+### Video won't open or reports an unsupported codec
+
+The primary verified path is H.264 in MP4/MKV; macOS additionally supports
+VideoToolbox H.264/HEVC (8-bit SDR). Unsupported codecs return a clear error
+with no silent backend fallback. See
+[Music & Video](/en/guides/music-video/#codec-support).
+
+### Picture but no sound
+
+1. Press **M** to confirm the app is not muted.
+2. Check the system output device.
+3. Dolby track availability depends on installed system components.
+
+### Long buffering after seeking
+
+- Magnet playback: waits for verified data near the requested position; fewer
+  peers or a proxy blocking BT makes it slower (see
+  [Magnet Playback](/en/guides/magnet/)).
+- Remote elementary MPEG audio: approximate byte seeking, limited VBR accuracy.
+- FLAC on Windows: currently pre-rolls from the beginning, so seek latency grows
+  with the target position (see
+  [Music & Video](/en/guides/music-video/#known-seeking-limitations)).
+
+## Online content
+
+### Online music search fails or quality is unavailable
+
+Check the API key under **Settings → Music** and your network; availability is
+decided upstream, and unavailable quality is reported explicitly instead of
+silently downgrading. See [Online Music](/en/guides/online-music/).
+
+### Comic source unavailable or images fail to load
+
+- Upstream outages or exhausted image quotas cause temporary failures; cached
+  pages stay readable.
+- A Komiic account provides account-level quota (see
+  [Reading Comics](/en/guides/comics/#komiic-account-optional)).
+- Some sources need adapter updates; for persistent failures check or file
+  [Issues](https://github.com/PordoTech/pordo/issues).
+
+### QQ Music encrypted file won't open
+
+QMC1 and supported QMC2 Map/RC4 variants open; some variants need a per-song
+ekey import; EncV2 and unknown footer versions are unsupported. Encrypted files
+from magnets must finish downloading first. See
+[Online Music](/en/guides/online-music/#qq-music-encrypted-local-files).
+
+## AI
+
+### Subtitle/lyrics generation fails, stalls or leaves gaps
+
+1. Confirm an audio-capable model is selected under **AI Subtitles**; comic
+   translation needs an image-editing model.
+2. Check provider quota and networking; in TUN/proxy setups adjust routing per
+   the [magnet guide](/en/guides/magnet/#networking-and-proxies-tunsystem-proxy).
+3. Failed segments leave gaps; review results manually.
+
+### Subtitles disappeared after a restart
+
+Generated subtitles are not saved automatically; export SRT before closing or
+switching media. See [AI subtitles](/en/guides/ai/#ai-subtitles).
+
+### I cancelled generation — will I still be charged?
+
+Cancelling only stops local waiting; a request already accepted by the provider
+may still be billed. See the
+[data-sent and billing notes in the AI guide](/en/guides/ai/).
+
+## Install and updates
+
+### macOS cannot verify the developer
+
+Published macOS packages are ad-hoc signed and not notarized. Open
+**System Settings → Privacy & Security** and allow the app. See
+[Install & Update](/en/guides/install-update/#macos-signing-and-first-launch).
+
+### Windows finds no new version
+
+The repository moved to `PordoTech/pordo`, and Windows clients through v0.5.1
+still validate updates against the former path. Install the first newer version
+manually from Releases; in-app updates resume afterwards. See
+[Install & Update](/en/guides/install-update/#windows-install-and-update).
+
+### Android over-install fails
+
+Test-signed builds cannot upgrade to the release signature: sync/back up data →
+uninstall → install the official APK. Devices must be arm64, Android 9+. See
+[Android App](/en/guides/android/#signing-and-updates).
+
+### How do I verify downloads?
+
+Releases provide per-platform `SHA256SUMS-*.txt` files plus a combined manifest.
+Note that checksums verify integrity only; packages carry no publisher
+signature. See
+[Install & Update](/en/guides/install-update/#verifying-packages).
+
+## Sync
+
+### API keys don't sync to other devices
+
+API keys are excluded by default. Both ends must enable key sync and use the same
+separate passphrase (at least 12 characters); a wrong passphrase stops writes
+instead of overwriting. See
+[WebDAV Sync](/en/guides/webdav-sync/#api-key-sync-optional-off-by-default).
+
+### Favorites or progress not syncing
+
+Confirm both devices use the same WebDAV account with sync enabled; offline
+changes merge after reconnecting; the position being played/read is never
+force-jumped. See
+[WebDAV Sync](/en/guides/webdav-sync/#conflicts-and-offline-changes).
+
+### Does the Komiic account sync?
+
+No. The Komiic account, password and session cookies are not part of WebDAV /
+API-key sync; sign in separately on each device.
+
+## Data and disk
+
+### Where is app data stored?
+
+Windows: `%LOCALAPPDATA%/pordo`; macOS: `~/.config/pordo` (honors
+`XDG_CONFIG_HOME`). Profiles in the old `replayer` directories are reused
+automatically. See
+[WebDAV Sync](/en/guides/webdav-sync/#local-data-locations-and-disk-use).
+
+### Disk usage keeps growing
+
+Downloads and caches are never cleaned automatically: stop a magnet task before
+deleting its cache; music downloads stay in the download directory (with their
+sidecar files).
+
+## Other
+
+### How do I report a problem?
+
+File an issue in [Issues](https://github.com/PordoTech/pordo/issues) with your
+platform, app version, steps and the error message. Redact accounts and keys
+first.
+
+### What is the relationship between Pordo and replayer?
+
+Same product: replayer was renamed to Pordo. Old profile directories, sidecar
+files and published identities remain compatible; see
+[Install & Update](/en/guides/install-update/#upgrading-from-replayer).

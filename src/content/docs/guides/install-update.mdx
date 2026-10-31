@@ -1,0 +1,107 @@
+---
+title: 安装与更新
+description: Pordo 各平台安装包类型、系统要求、更新方式、macOS 签名状态与旧仓库迁移说明。
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="note" title="适用平台与核对依据">
+适用平台：Windows · macOS · Android。内容依据 pordo 仓库 main 分支 `893459a`、
+v0.5.1 发布资料与发布文档于 2026-10-31 核对。
+</Aside>
+
+所有平台的安装包都发布在同一个
+[Releases](https://github.com/PordoTech/pordo/releases) 页面。也可以从本站
+[下载页](/download/)直接获取当前正式版本的对应附件。
+
+## 安装包类型
+
+| 平台 | 包 | 说明 |
+| --- | --- | --- |
+| Windows x64 | `…-windows-x86_64-setup.exe` | 安装器，按当前用户安装，默认位于 `%LOCALAPPDATA%/Programs/pordo` |
+| Windows x64 | `…-windows-x86_64.zip` | 便携包，解压即用 |
+| macOS 15+ · Apple Silicon | `…-macos-aarch64.dmg` / `.zip` | DMG 拖拽安装；ZIP 内是 `Pordo.app` |
+| macOS 15+ · Intel | `…-macos-x86_64.dmg` / `.zip` | 同上 |
+| Android 9+ · arm64 | `…-android-arm64-v8a.apk` | 正式签名 APK |
+
+v0.5.1 及更早版本的附件使用 `replayer-` 文件名前缀（例如
+`replayer-0.5.1-windows-x86_64-setup.exe`）；之后的版本按发布文档改用
+`pordo-` 前缀。两种前缀指向同一个产品。
+
+## 系统要求
+
+- **macOS**：15 或更高版本，Apple Silicon 与 Intel 均支持。
+- **Android**：9（API 28）或更高版本的 arm64 设备。
+- **Windows**：x64。发布资料未给出最低 Windows 版本，本站不作宣称。
+
+## Windows：安装与更新
+
+1. 运行安装器，或解压便携 ZIP 到任意目录。
+2. 安装器不会替换用户设置或已下载的媒体。
+3. 更新：在应用内 **设置 → 关于** 检查、下载并安装更新。更新检查使用
+   GitHub 最新正式版本，校验文件名、可信 URL、大小与 SHA-256 摘要后才安装；
+   检查不会静默安装更新。更新日志位于用户目录的 `pordo/updates/VERSION/`。
+
+<Aside type="caution" title="旧仓库迁移（重要）">
+仓库已迁移到 `PordoTech/pordo`。**v0.5.1 及更早版本的 Windows 客户端仍按旧仓库地址
+校验更新**，因此无法自动发现之后的新版本。当第一个更新版本发布后，请手动从
+[Releases](https://github.com/PordoTech/pordo/releases) 下载安装一次；更新的客户端
+将使用新地址，恢复正常的应用内更新。
+</Aside>
+
+## macOS 签名与首次启动
+
+- 当前发布的 macOS 包为 **ad-hoc 签名，未经过 Developer ID 公证**。
+- 首次打开时 macOS 可能拦截：前往 **系统设置 → 隐私与安全性**，在安全提示处
+  选择仍要打开。
+- 安装：打开 DMG 把 `Pordo.app` 拖入“应用程序”，或使用 ZIP 解压后自行移动。
+- 更新：macOS 端不提供应用内更新，请前往
+  [Releases](https://github.com/PordoTech/pordo/releases) 下载新版本覆盖安装。
+- 应用内生成的字幕在重启前请先导出（见 [AI 指南](/guides/ai/)）。
+
+## Android：安装与签名更新
+
+1. 从 Releases 下载 `…-android-arm64-v8a.apk`。
+2. 在设备上允许安装未知来源应用，然后安装 APK。
+3. 后续版本使用同一正式签名密钥，可直接覆盖安装更新。
+
+<Aside type="caution" title="测试签名包不能原地升级">
+此前的开发/测试包使用测试签名，无法直接升级为正式签名版本。若你安装过测试包：
+先通过 WebDAV 同步或自行备份数据 → 卸载测试版 → 安装正式版。同一正式签名的
+后续版本可以直接更新。
+</Aside>
+
+正式签名证书的 SHA-256 固定在仓库
+[`android/release-certificate.sha256`](https://github.com/PordoTech/pordo/blob/main/android/release-certificate.sha256)，
+可用于核对 APK 来源。
+
+## 校验安装包
+
+每个版本在 Releases 提供 SHA-256 校验文件，按平台区分（如
+`SHA256SUMS-windows-x86_64.txt`、`SHA256SUMS-android-arm64-v8a.txt`），另有汇总的
+`SHA256SUMS.txt`。
+
+<Aside type="note">
+校验和用于确认下载文件完整、未被篡改。当前 Windows 与 macOS 安装包**没有**
+Authenticode / Developer ID 发布者签名，哈希不能证明发布者身份，只证明文件一致性。
+</Aside>
+
+## 从 replayer 升级
+
+产品由 replayer 更名为 Pordo。从旧版本升级时：
+
+- 已有设置会保留：Windows 数据通常位于 `%LOCALAPPDATA%/pordo`，macOS 位于
+  `~/.config/pordo`（配置了 `XDG_CONFIG_HOME` 时随之变化）；对应 `replayer`
+  目录中的既有配置会被自动复用。
+- macOS 上安装 Pordo 后，请退出旧的 `replayer.app` 并删除其应用包。
+- 旧版下载音乐的 `.replayer.json` / `.replayer-cover.png` sidecar 文件仍可读取；
+  新写入使用 `.pordo.json` / `.pordo-cover.png`。
+
+## 常见失败与处理
+
+| 现象 | 处理 |
+| --- | --- |
+| macOS 提示无法验证开发者 | 见上文[签名与首次启动](#macos-签名与首次启动)，在隐私与安全性中放行 |
+| Windows 检查不到新版本 | v0.5.1 及更早版本受旧仓库地址影响，手动从 Releases 安装一次新版本 |
+| Android 安装失败或提示签名冲突 | 确认设备为 arm64、Android 9+；安装过测试签名包时先卸载再安装正式版 |
+| 下载文件校验不一致 | 重新下载；持续失败时在 [Issues](https://github.com/PordoTech/pordo/issues) 反馈 |

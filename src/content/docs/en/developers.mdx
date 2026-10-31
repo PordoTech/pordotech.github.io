@@ -1,0 +1,79 @@
+---
+title: Developer Index
+description: Index of pordo and remdia repository documentation — building, architecture, releasing, SDK, ABI and licensing.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="note" title="Verification basis">
+Every link below pointed to a document that existed on the repositories' main
+branches when verified on 2026-10-31. Build, architecture and release facts are
+maintained in the repositories; this site does not keep a second copy.
+</Aside>
+
+Pordo is written in Rust with an egui/WGPU interface and CPAL audio output.
+Windows and macOS source builds play media and process subtitle audio through
+[remdia](https://github.com/PordoTech/remdia) component graphs, without linking
+FFmpeg. This site maintains user-facing tutorials; development material lives in
+the repositories.
+
+## pordo repository docs
+
+Repository: [PordoTech/pordo](https://github.com/PordoTech/pordo) (the local
+checkout directory name `replayer` is historical)
+
+| Document | Contents |
+| --- | --- |
+| [development.md](https://github.com/PordoTech/pordo/blob/main/docs/development.md) | Windows/macOS build and preview, checks, subtitle CLI, diagnostics env vars, package-size policy, brand and upgrade compatibility |
+| [architecture.md](https://github.com/PordoTech/pordo/blob/main/docs/architecture.md) | Implementation boundaries and architecture |
+| [releasing.md](https://github.com/PordoTech/pordo/blob/main/docs/releasing.md) | CI, versioning, per-platform packaging and signing, update behavior |
+| [remdia.md](https://github.com/PordoTech/pordo/blob/main/docs/remdia.md) | remdia integration: media graphs, current codec limits, image graphs, validation and packaging |
+| [android.md](https://github.com/PordoTech/pordo/blob/main/docs/android.md) | Android: signing and release, cloud sync, toolchain, JNI conventions, testing |
+| [third-party.md](https://github.com/PordoTech/pordo/blob/main/docs/third-party.md) | Bundled components and licenses |
+| [guide.md](https://github.com/PordoTech/pordo/blob/main/docs/guide.md) | User-facing feature documentation (the main source for this site's guides) |
+
+## remdia SDK
+
+Repository: [PordoTech/remdia](https://github.com/PordoTech/remdia) — a modular
+media SDK that composes system media capabilities (Media Foundation /
+VideoToolbox / WIC / ImageIO and friends) as independent components, without
+FFmpeg. pordo pins an exact Git revision in Cargo.toml.
+
+| Document | Contents |
+| --- | --- |
+| [README](https://github.com/PordoTech/remdia#readme) | SDK overview and quick start |
+| [architecture.md](https://github.com/PordoTech/remdia/blob/main/docs/architecture.md) | Component-graph architecture |
+| [plugin-abi.md](https://github.com/PordoTech/remdia/blob/main/docs/plugin-abi.md) | C ABI for external extensions (currently v2.2) |
+| [pordo-scope.md](https://github.com/PordoTech/remdia/blob/main/docs/pordo-scope.md) | What pordo uses from the SDK |
+| [system-media-and-image-design.md](https://github.com/PordoTech/remdia/blob/main/docs/system-media-and-image-design.md) | System media and image component design |
+| [THIRD_PARTY.md](https://github.com/PordoTech/remdia/blob/main/THIRD_PARTY.md) | SDK third-party components |
+
+Detailed SDK documentation stays in the remdia repository; this site does not
+mirror SDK technical material in its first version.
+
+## Licensing
+
+- **remdia**: MIT — see
+  [LICENSE](https://github.com/PordoTech/remdia/blob/main/LICENSE).
+- **pordo**: the repository currently has **no root LICENSE file**. Before reusing
+  its code, ask the maintainer about licensing via
+  [Issues](https://github.com/PordoTech/pordo/issues); bundled component licenses
+  are listed in
+  [third-party.md](https://github.com/PordoTech/pordo/blob/main/docs/third-party.md).
+
+## Brand and compatibility identities
+
+The product was renamed from replayer to Pordo. Published identities
+intentionally stay stable: Android application ID `dev.replayer`, macOS bundle ID
+`io.github.l-chris.replayer`, the Windows installer AppId, OS credential
+namespaces, the WebDAV v1 path `replayer/v1/devices/` and the encrypted formats
+remain compatible across versions; newly written sidecars use `.pordo.*` names
+while old `.replayer.*` files stay readable. See the brand and upgrade
+compatibility section of
+[development.md](https://github.com/PordoTech/pordo/blob/main/docs/development.md).
+
+## Feedback
+
+- Bugs and feature requests: [pordo Issues](https://github.com/PordoTech/pordo/issues)
+- SDK topics: [remdia Issues](https://github.com/PordoTech/remdia/issues)
+- Release changes: [Releases](https://github.com/PordoTech/pordo/releases)

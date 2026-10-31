@@ -1,0 +1,216 @@
+---
+import '../styles/landing.css';
+import { downloadText } from '../lib/i18n';
+import {
+  PORDO_RELEASES_URL,
+  PORDO_REPO_URL,
+  GITHUB_ORG_URL,
+} from '../lib/site';
+
+interface Props {
+  lang: 'zh' | 'en';
+}
+
+const { lang } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const zh = lang === 'zh';
+const t = downloadText(lang);
+
+const homeHref = zh ? base : `${base}en/`;
+const docsHref = zh ? `${base}docs/` : `${base}en/docs/`;
+const langHref = zh ? `${base}en/download/` : `${base}download/`;
+const docsPrefix = zh ? `${base}guides/` : `${base}en/guides/`;
+
+const guideHrefs: Record<string, string> = {
+  'getting-started': `${docsPrefix}getting-started/`,
+  'install-update': `${docsPrefix}install-update/`,
+  'webdav-sync': `${docsPrefix}webdav-sync/`,
+  android: `${docsPrefix}android/`,
+};
+
+const year = new Date().getFullYear();
+---
+
+<html lang={zh ? 'zh-CN' : 'en'}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{t.pageTitle}</title>
+    <meta name="description" content={t.pageDesc} />
+    <link rel="icon" type="image/png" href={`${base}images/pordo-icon-256.png`} />
+    <link rel="alternate" hreflang={zh ? 'zh-CN' : 'en'} href={zh ? `${base}download/` : `${base}en/download/`} />
+    <link rel="alternate" hreflang={zh ? 'en' : 'zh-CN'} href={langHref} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{t.skipToContent}</a>
+
+    <nav class="nav" aria-label={zh ? '主导航' : 'Main navigation'}>
+      <div class="wrap nav-inner">
+        <a class="brand" href={homeHref}>
+          <img src={`${base}images/pordo-mark-256.png`} alt="" width="32" height="32" />
+          <span>Pordo</span>
+        </a>
+        <div class="nav-links">
+          <a href={docsHref}>{t.navDocs}</a>
+          <a href={PORDO_REPO_URL} target="_blank" rel="noopener">GitHub</a>
+          <a class="lang-switch" href={langHref} aria-label={t.langSwitchAria}>{t.langLabel}</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="dl-main wrap" id="main">
+      <div class="center">
+        <h1>{t.h1}</h1>
+        <p class="sub">{t.sub}</p>
+      </div>
+
+      <!--
+        无 JS 回退：所有按钮与次入口默认指向有效的 Releases 页面；
+        启用 JS 后，一次 latest-release 请求驱动四张卡片（见页尾脚本）。
+      -->
+      <div class="dl-grid" id="dl-grid"
+        data-locale={lang}
+        data-text-checking={t.statusChecking}
+        data-text-unavailable={t.statusUnavailable}
+        data-text-missing={t.statusMissing}
+        data-text-fallback={t.btnFallback}
+        data-text-download={t.btnDownload}
+        data-text-aria={t.btnAriaResolved}
+        data-text-version={t.versionPrefix}
+        data-text-published={t.publishedLabel}>
+        {t.cards.map((card) => (
+          <section class="dl-card" data-platform={card.id} aria-labelledby={`dl-${card.id}`}>
+            <h2 id={`dl-${card.id}`}>{card.name}</h2>
+            <p class="hint">{card.hint}</p>
+            <p class="dl-status is-muted" data-role="status" aria-live="polite">{t.statusStatic}</p>
+            <a class="btn btn-primary" data-role="main" href={PORDO_RELEASES_URL} target="_blank" rel="noopener">
+              {t.btnFallback}
+            </a>
+            <p class="dl-secondary">
+              {card.secondaryKind === 'portable' && (
+                <a data-role="portable" href={PORDO_RELEASES_URL} target="_blank" rel="noopener">{card.secondaryLabel}</a>
+              )}
+              {card.secondaryKind === 'android-notes' && (
+                <a href={guideHrefs.android}>{card.secondaryLabel}</a>
+              )}
+              <a data-role="checksum" href={PORDO_RELEASES_URL} target="_blank" rel="noopener">{t.checksumLabel}</a>
+            </p>
+          </section>
+        ))}
+      </div>
+
+      <div class="dl-notes">
+        <h2>{t.notesTitle}</h2>
+        <ul>
+          {t.notes.map((note) => <li>{note}</li>)}
+        </ul>
+      </div>
+
+      <aside class="dl-aside">
+        <strong>{t.namingTitle}</strong><br />
+        {t.namingText}
+      </aside>
+
+      <div class="dl-guides">
+        <span>{t.guidesTip}</span>
+        <ul>
+          {t.guideLinks.map((link) => (
+            <li><a href={guideHrefs[link.hrefKind]}>{link.label}</a></li>
+          ))}
+        </ul>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="wrap footer-inner">
+        <span>{t.footerCopy.replace('{year}', String(year))}</span>
+        <a href={docsHref}>{t.footerDocs}</a>
+        <a href={PORDO_RELEASES_URL} target="_blank" rel="noopener">{t.footerReleases}</a>
+        <span class="right"><a href={GITHUB_ORG_URL} target="_blank" rel="noopener">github.com/PordoTech</a></span>
+      </div>
+    </footer>
+
+    <!--
+      渐进增强：只请求一次 GitHub latest stable Release（草稿/预发布已由端点
+      与本地防御共同过滤），同一响应驱动全部平台卡片。直链只用响应里的
+      browser_download_url；失败/缺包一律回到静态默认入口，不猜链接、不用 token。
+      解析逻辑在 src/lib/releases.ts，由 tests/releases.test.ts 覆盖失败条件。
+    -->
+    <script>
+      import { fetchLatestRelease, formatReleaseDate } from '../lib/releases';
+
+      const grid = document.getElementById('dl-grid');
+
+      async function main() {
+        if (!grid) return;
+        const text = {
+          checking: grid.dataset.textChecking ?? '',
+          unavailable: grid.dataset.textUnavailable ?? '',
+          missing: grid.dataset.textMissing ?? '',
+          fallback: grid.dataset.textFallback ?? '',
+          download: grid.dataset.textDownload ?? '',
+          aria: grid.dataset.textAria ?? '',
+          version: grid.dataset.textVersion ?? '',
+          published: grid.dataset.textPublished ?? '',
+        };
+        const cards = Array.from(grid.querySelectorAll<HTMLElement>('.dl-card'));
+        const setStatus = (card: HTMLElement, message: string, muted: boolean) => {
+          const el = card.querySelector<HTMLElement>('[data-role="status"]');
+          if (!el) return;
+          el.textContent = message;
+          el.classList.toggle('is-muted', muted);
+        };
+        for (const card of cards) setStatus(card, text.checking, false);
+
+        const lookup = await fetchLatestRelease();
+
+        if (lookup.status !== 'ok') {
+          // 超时、限流、离线或响应异常：恢复默认 Releases 入口。
+          for (const card of cards) setStatus(card, text.unavailable, true);
+          return;
+        }
+
+        const tag = lookup.release.tag_name ?? '';
+        const date = formatReleaseDate(lookup.release.published_at);
+        const versionLine = date ? `${tag} · ${text.published} ${date}` : tag;
+
+        for (const card of cards) {
+          const platform = card.dataset.platform;
+          if (!platform) continue;
+          const resolved =
+            lookup.resolved[platform as keyof typeof lookup.resolved];
+          if (!resolved) {
+            setStatus(card, text.unavailable, true);
+            continue;
+          }
+          const mainLink = card.querySelector<HTMLAnchorElement>('[data-role="main"]');
+          if (resolved.installer && mainLink) {
+            mainLink.href = resolved.installer.browser_download_url;
+            mainLink.textContent = text.download;
+            mainLink.setAttribute(
+              'aria-label',
+              text.aria.replace('{platform}', platform).replace('{version}', tag),
+            );
+            setStatus(card, `${text.version}: ${versionLine}`, false);
+          } else {
+            // 本版本缺包：如实提示并保留 Releases 入口，不偷换旧版本附件。
+            if (mainLink) {
+              mainLink.textContent = text.fallback;
+            }
+            setStatus(card, `${tag} · ${text.missing}`, true);
+          }
+          const portable = card.querySelector<HTMLAnchorElement>('[data-role="portable"]');
+          if (portable && resolved.portable) {
+            portable.href = resolved.portable.browser_download_url;
+          }
+          const checksum = card.querySelector<HTMLAnchorElement>('[data-role="checksum"]');
+          if (checksum && resolved.checksum) {
+            checksum.href = resolved.checksum.browser_download_url;
+          }
+        }
+      }
+
+      main();
+    </script>
+  </body>
+</html>

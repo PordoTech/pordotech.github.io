@@ -1,0 +1,71 @@
+---
+title: Magnet Playback
+description: Open magnet links, pick files, stream while downloading — task controls, cache management and networking/proxy notes.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="note" title="Platforms and verification">
+Applies to: Windows · macOS (the Android app does not provide magnet playback).
+Verified on 2026-10-31 against pordo main branch `893459a` and the v0.5.1
+release materials.
+</Aside>
+
+## Opening a magnet link
+
+1. Choose **Open magnet link** and paste the link.
+2. Wait for metadata to resolve, then select a supported file from the list.
+3. Expected result: playback starts once verified downloaded data is available;
+   seeking prioritizes data around the requested position.
+
+If playback takes a long time to start: poor peer/seed availability or a proxy
+blocking BT traffic both delay it.
+
+## Task controls
+
+The task menu supports:
+
+- **File selection**: choose which files to download.
+- **Pause/Resume**: pausing the download also pauses playback.
+- **Stop**: stops the task but **keeps downloaded files**.
+
+<Aside type="caution">
+- Torrent sessions do not continue after the app exits; use a dedicated BT
+  client for long-term seeding.
+- Cache files are **not removed automatically**. Stop a task before deleting its
+  cache manually.
+</Aside>
+
+## Support scope and limits
+
+- **Pure v2 magnets are unsupported**: the link must contain the v1 `btih`
+  info-hash; magnets carrying only a v2 hash cannot be used.
+- Encrypted media files (such as QQ Music formats) must finish downloading
+  before local playback; whether they decrypt is covered in
+  [Online Music](/en/guides/online-music/#qq-music-encrypted-local-files).
+
+## Using AI subtitles with magnets
+
+Videos played from magnets can generate AI subtitles directly: generation uses
+audio already present in the torrent cache. If the relevant audio has not been
+downloaded yet, generation waits or is delayed. Data-sent and billing notes:
+[AI guide](/en/guides/ai/).
+
+## Networking and proxies (TUN/system proxy)
+
+- The magnet dialog offers routing guidance for the detected environment; follow
+  its hints.
+- With TUN mode or a global proxy, make sure the **AI-service proxy rule comes
+  before any process-wide direct rule**, otherwise subtitle generation can fail
+  on direct connections.
+- When a proxy blocks BT traffic, playback buffers for a long time; exclude BT
+  traffic from the proxy.
+
+## Common failures
+
+| Symptom | Fix |
+| --- | --- |
+| Metadata never resolves | Check link completeness (v1 `btih` required), network, and whether the proxy allows BT |
+| Playback keeps buffering | Few peers or proxy interference; wait for more verified data or adjust routing |
+| Disk usage keeps growing | Caches are not cleaned automatically; stop the task and delete its cache manually |
+| Subtitle generation is slow | The audio is not in the cache yet; wait or let the task download that segment first |

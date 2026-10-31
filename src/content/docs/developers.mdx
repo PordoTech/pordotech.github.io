@@ -1,0 +1,70 @@
+---
+title: 开发者索引
+description: pordo 与 remdia 的仓库文档索引：构建、架构、发布、SDK、ABI 与许可。
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="note" title="内容核对依据">
+以下链接均指向仓库 main 分支上于 2026-10-31 核实存在的文档。构建、架构与发布
+事实以仓库文档为准，本站不复制维护第二份。
+</Aside>
+
+Pordo 使用 Rust 编写，UI 基于 egui/WGPU，音频输出使用 CPAL。Windows 与 macOS
+源码构建通过 [remdia](https://github.com/PordoTech/remdia) 组件图完成播放与字幕
+音频处理，不链接 FFmpeg。本站面向普通用户维护操作教程；开发资料请阅读仓库文档。
+
+## pordo 仓库文档
+
+仓库：[PordoTech/pordo](https://github.com/PordoTech/pordo)（目录名 `replayer`
+为历史名称）
+
+| 文档 | 内容 |
+| --- | --- |
+| [development.md](https://github.com/PordoTech/pordo/blob/main/docs/development.md) | Windows/macOS 构建与预览、检查命令、字幕 CLI、诊断环境变量、包体积策略、品牌与升级兼容 |
+| [architecture.md](https://github.com/PordoTech/pordo/blob/main/docs/architecture.md) | 实现边界与架构 |
+| [releasing.md](https://github.com/PordoTech/pordo/blob/main/docs/releasing.md) | CI、版本号、各平台打包与签名、更新行为 |
+| [remdia.md](https://github.com/PordoTech/pordo/blob/main/docs/remdia.md) | remdia 集成：媒体图、编解码现状与限制、图像图、验证与打包 |
+| [android.md](https://github.com/PordoTech/pordo/blob/main/docs/android.md) | Android 端：签名与发布、云同步、工具链、JNI 约定、测试 |
+| [third-party.md](https://github.com/PordoTech/pordo/blob/main/docs/third-party.md) | 捆绑组件与许可 |
+| [guide.md](https://github.com/PordoTech/pordo/blob/main/docs/guide.md) | 面向用户的功能说明（本站指南的主要来源） |
+
+## remdia SDK
+
+仓库：[PordoTech/remdia](https://github.com/PordoTech/remdia) —— 模块化媒体
+SDK：以独立组件组合系统媒体能力（Media Foundation / VideoToolbox / WIC /
+ImageIO 等），不依赖 FFmpeg。pordo 在 Cargo.toml 中锁定精确的 Git revision。
+
+| 文档 | 内容 |
+| --- | --- |
+| [README](https://github.com/PordoTech/remdia#readme) | SDK 概览与快速上手 |
+| [architecture.md](https://github.com/PordoTech/remdia/blob/main/docs/architecture.md) | 组件图架构 |
+| [plugin-abi.md](https://github.com/PordoTech/remdia/blob/main/docs/plugin-abi.md) | 外部扩展的 C ABI（当前 v2.2） |
+| [pordo-scope.md](https://github.com/PordoTech/remdia/blob/main/docs/pordo-scope.md) | pordo 使用范围 |
+| [system-media-and-image-design.md](https://github.com/PordoTech/remdia/blob/main/docs/system-media-and-image-design.md) | 系统媒体与图像组件设计 |
+| [THIRD_PARTY.md](https://github.com/PordoTech/remdia/blob/main/THIRD_PARTY.md) | SDK 第三方组件 |
+
+详细的 SDK 文档继续维护在 remdia 仓库；本站首版不镜像 SDK 技术资料。
+
+## 许可
+
+- **remdia**：MIT，见 [LICENSE](https://github.com/PordoTech/remdia/blob/main/LICENSE)。
+- **pordo**：仓库根目录当前没有 LICENSE 文件。复用其代码前请先通过
+  [Issues](https://github.com/PordoTech/pordo/issues) 与维护者确认许可；
+  捆绑组件的许可见 [third-party.md](https://github.com/PordoTech/pordo/blob/main/docs/third-party.md)。
+
+## 品牌与兼容标识
+
+产品由 replayer 更名为 Pordo。已发布的身份标识有意保持稳定：Android
+application ID `dev.replayer`、macOS bundle ID `io.github.l-chris.replayer`、
+Windows 安装器 AppId、系统凭据命名空间、WebDAV v1 路径
+`replayer/v1/devices/` 与加密格式均跨版本兼容；新写入的 sidecar 使用
+`.pordo.*` 命名，旧 `.replayer.*` 保持可读。详见
+[development.md](https://github.com/PordoTech/pordo/blob/main/docs/development.md)
+的品牌与升级兼容一节。
+
+## 反馈
+
+- 问题与功能请求：[pordo Issues](https://github.com/PordoTech/pordo/issues)
+- SDK 相关：[remdia Issues](https://github.com/PordoTech/remdia/issues)
+- 版本变更：[Releases](https://github.com/PordoTech/pordo/releases)

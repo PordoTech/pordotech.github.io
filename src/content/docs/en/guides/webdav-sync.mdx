@@ -1,0 +1,114 @@
+---
+title: WebDAV Sync
+description: Sync settings, favorites and progress with your own WebDAV storage — setup, sync scope, API-key encryption, conflicts and offline handling.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="note" title="Platforms and verification">
+Applies to: Windows · macOS · Android. Verified on 2026-10-31 against pordo main
+branch `893459a`, the v0.5.1 release materials and the Android documentation.
+</Aside>
+
+<Aside type="caution" title="Sync is not a media backup">
+WebDAV sync covers lightweight data — settings, favorites and progress. It does
+**not** upload local media files and is not a substitute for your own backups.
+</Aside>
+
+## Setup (desktop)
+
+1. Open **Settings → Cloud Sync** and enter your HTTPS WebDAV service address,
+   username and password (an app-specific password is recommended).
+2. Choose **Test connection**. The test only creates, reads and deletes a random
+   probe object; it never touches existing data.
+3. Enable sync.
+4. Repeat on another device with the **same WebDAV account**.
+
+Expected result: supported settings, favorites and progress merge across
+devices; offline changes stay local and merge after reconnecting.
+
+## Setup (Android)
+
+1. Entry point: **Cloud sync** at the top right of the music or comics page.
+2. Choose the same WebDAV provider as desktop, fill in the address, username and
+   app password, then save.
+3. Optionally **test the connection**, then **sync now**.
+
+Android sync timing: on launch, on return to foreground and on manual trigger;
+every 5 minutes while in the foreground; ordinary changes debounce for 5 seconds
+and progress changes for 30 seconds; pending changes are committed when leaving
+the foreground. Errors back off for 5 minutes and manual sync retries
+immediately. After the process is killed, syncing resumes at the next launch —
+there is **no dedicated background service**. The device ID is generated and
+persisted locally, never imported from the remote.
+
+## Sync scope
+
+| Synced | Not synced |
+| --- | --- |
+| Supported service/model settings | Local media files and paths |
+| Comic favorites, chapter lists, read/update markers, reading progress | Playback queues |
+| Online-track favorites, playback progress, source and quality options | Downloaded audio, covers, comic pages |
+| Related preferences | Translated images and subtitle caches |
+| API keys (optional, separately encrypted) | Local history never favorited or tracked |
+
+Also:
+
+- Online-track favorites show metadata first on other devices; download to play.
+- AI/subtitle options not yet implemented on the phone are preserved during
+  merges, never deleted.
+- The Komiic account, password and session cookies are not synced (see
+  [Reading Comics](/en/guides/comics/#komiic-account-optional)).
+
+## API key sync (optional, off by default)
+
+API keys are **excluded by default**. To sync them across devices:
+
+1. Enable the API-key sync option on every device.
+2. Enter the **same separate sync passphrase** (at least 12 characters) on all of
+   them. Keys are encrypted with this passphrase before being written to WebDAV.
+3. Keep the original passphrase available when changing it.
+
+<Aside type="note">
+Neither the WebDAV password nor the passphrase itself is ever uploaded. With a
+wrong passphrase the app **stops writing** rather than replacing existing
+encrypted keys. Local credentials are protected by Credential Manager (Windows),
+Keychain (macOS) and KeyStore (Android) respectively.
+</Aside>
+
+## Conflicts and offline changes
+
+- Sync merges via vector clocks and per-device documents; offline changes stay
+  local and merge after reconnecting.
+- On Android, local edits are written as field patches against the latest record
+  instead of overwriting freshly merged cloud state with stale objects; edits
+  made during a sync request are re-captured and merged after it returns.
+- When uploads remain pending the UI shows “waiting to sync”; unfinished
+  operations are written to an account-isolated local log.
+- After syncing, the bookshelf/details and favorite-song lists refresh
+  automatically; **the position you are playing or reading is never force-jumped
+  by remote progress** — merged progress is restored next time you open it.
+
+## Local data locations and disk use
+
+| Platform | Data directory |
+| --- | --- |
+| Windows | `%LOCALAPPDATA%/pordo` |
+| macOS | `~/.config/pordo` (follows `XDG_CONFIG_HOME` when set) |
+
+- Existing profiles in the matching `replayer` directories are reused
+  automatically.
+- Downloads and caches can occupy significant space; stop a magnet task before
+  deleting its cache manually (see
+  [Magnet Playback](/en/guides/magnet/)).
+- Keep sidecar files when moving downloaded music (see
+  [Online Music](/en/guides/online-music/)).
+
+## Common failures
+
+| Symptom | Fix |
+| --- | --- |
+| Connection test fails | Check the HTTPS address, username and app password; confirm the storage service allows WebDAV |
+| API keys not syncing | Enable key sync on both ends with the same passphrase; a wrong passphrase stops writes |
+| Progress looks “rolled back” | Merges follow the latest vector clock; the position being played/read is never force-jumped |
+| Android shows “waiting to sync” | Sync resumes when the network returns or on manual trigger; errors back off automatically |

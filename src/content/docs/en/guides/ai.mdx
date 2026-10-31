@@ -1,0 +1,105 @@
+---
+title: AI Subtitles, Lyrics & Translation
+description: Configure AI providers and models, generate video subtitles and export SRT, generate lyrics, translate comic pages — including what data is sent and how billing works.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="note" title="Platforms and verification">
+Applies to: Windows · macOS (the Android app currently has no video, AI-subtitle
+or comic-translation UI; AI-lyrics capability on Android has not been verified,
+so this site makes no claim). Verified on 2026-10-31 against pordo main branch
+`893459a` and the v0.5.1 release materials.
+</Aside>
+
+<Aside type="caution" title="Data sent and billing">
+AI features talk to third-party services you configure yourself:
+
+- For subtitles/lyrics, **only the explicitly requested audio segments** are sent
+  to the selected service — never video frames or local file paths. Comic
+  translation sends **comic page images**.
+- Providers typically bill per request. Cancelling local waiting does **not**
+  guarantee the server stops billing; an already accepted request may still be
+  charged.
+- Local playback and comic reading themselves need no AI account.
+</Aside>
+
+## Configuring providers and models
+
+1. Open **Settings → AI Providers** and enter a compatible service address, API
+   key and available models.
+2. Fetch the model list, or add a model ID manually.
+3. Under **AI Subtitles**, select an **audio-capable** model; comic translation
+   selects its **image-editing** model separately.
+4. Credentials are stored via Windows Credential Manager / macOS Keychain.
+
+Model capabilities are decided by the provider: subtitles/lyrics need audio
+understanding; comic translation needs a service that accepts an image-edit
+request and returns an edited image — a text-only model is not sufficient.
+
+## AI subtitles
+
+1. Open a video and choose **Subtitles → Generate AI subtitles**.
+2. Completed segments appear during playback; generation prioritizes the current
+   playback position.
+3. The subtitle menu can hide, cancel or export the results.
+
+<Aside type="caution">
+Generated subtitles are **not saved automatically**. Export the results you need
+as SRT before closing or switching media.
+</Aside>
+
+- Output language follows the interface language (Chinese or English); optional
+  bilingual subtitles show the original and target language together.
+- Audio sent to the service is transcoded to MP3 by default, with WAV available
+  for compatible services; model support varies between providers.
+- Timing and wording are model estimates; failed segments may leave gaps. Check
+  results before relying on them.
+- Magnet playback can reuse audio already present in the torrent cache for
+  subtitle generation; missing audio delays generation (see
+  [Magnet Playback](/en/guides/magnet/)).
+
+## AI lyrics
+
+1. Play a local song or a fully downloaded online track.
+2. Click the **Lyrics** icon in the playback bar and choose **Generate AI lyrics**.
+3. Generation uses the audio model selected under **AI Subtitles**, keeps the
+   song's original language, and displays completed lines while generating.
+
+Result handling:
+
+| Situation | Behavior |
+| --- | --- |
+| Generation succeeds | Lyrics are saved automatically as a matching `.lrc` file beside the song and loaded next time |
+| **Regenerate lyrics** | Replaces the saved `.lrc` only after the new generation succeeds |
+| Cancelled / failed segments / nothing recognized | The saved file is left unchanged; existing lyrics stay visible until new lines are recognized |
+| Instrumental passages | May produce no lyrics |
+
+Recognition quality and timing accuracy depend on the selected model.
+
+## Comic translation
+
+1. Confirm a compatible service is added under **Settings → AI Providers** and an
+   image-editing model is selected in the comic settings.
+2. In the reader, choose **Translate page** or **Translate chapter**.
+3. Expected result: switch between original, translated and side-by-side views;
+   original images are always preserved and cached translations are reused.
+
+Notes:
+
+- Translation must be started explicitly; cancelling stops local waiting, but an
+  already accepted request may still be billed.
+- Generated images can change artwork or mistranslate text — compare important
+  content with the original.
+- A failed page neither removes its original nor prevents later pages from
+  continuing.
+- Old PNG/WebP translation caches remain usable; new translated results use JPEG.
+
+## Common failures
+
+| Symptom | Fix |
+| --- | --- |
+| Model list fetch fails | Check the service address and key; you can also add model IDs manually |
+| Subtitle generation stalls or leaves gaps | Failed segments leave gaps; check provider quota, network and proxy routing (for TUN setups see the magnet guide's networking notes) |
+| Translation returns the original image or errors | Confirm the selected model supports image editing; text-only models are insufficient |
+| Subtitles gone after restart | Generated subtitles are not saved automatically; export SRT first |

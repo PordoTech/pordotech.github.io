@@ -1,0 +1,100 @@
+---
+title: Music & Video
+description: Local music and video playback — queues, favorites, lyrics, shortcuts and codec support.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="note" title="Platforms and verification">
+Applies to: Windows · macOS (the Android app plays music but has no video UI;
+see [Android App](/en/guides/android/)). Verified on 2026-10-31 against pordo
+main branch `893459a`, the v0.5.1 release materials and the remdia integration docs.
+</Aside>
+
+## Opening and adding media
+
+- Open one or more files, or drop them onto the window.
+- **Add Files** or Shift-drop appends to the current queue.
+- A normal open/drop replaces the current queue.
+- Music and video queues are saved independently; removing an item never deletes
+  its file.
+
+The app chooses music or video mode from the media tracks.
+
+## Queues, favorites and recent media
+
+- The queue sidebar supports selecting, removing and reordering items; hold an
+  item's title before dragging to reorder.
+- Favorites and recent activity are available from the media pages and Home.
+- **Play all** on music favorites uses the displayed favorites list, including
+  online tracks not downloaded on this device.
+
+## Track info and lyrics
+
+Music mode shows available title, artist, album, cover art and lyrics:
+
+- Embedded tags take priority; downloaded-track metadata fills the gaps.
+- A matching `.lrc` file supplies timed lyrics.
+- Click the **Lyrics** icon in the playback bar and choose **Show lyrics** to open
+  the lyric view.
+- Choose **Generate AI lyrics** to transcribe a local song or a fully downloaded
+  online track.
+
+<Aside type="caution">
+Generating AI lyrics sends audio segments of the song to your configured AI
+provider and may incur charges. Recognition and timing depend on the selected
+model; instrumental passages can produce no lyrics. On success, lyrics are saved
+automatically as a matching `.lrc` file; **Regenerate** replaces that file only
+after the new generation succeeds; cancelling, failed segments or no recognized
+lyrics leave the saved file unchanged. See the
+[AI guide](/en/guides/ai/#ai-lyrics).
+</Aside>
+
+## Video playback
+
+- Toolbars appear when the pointer approaches the window edges; music controls
+  stay visible.
+- **F** or double-click toggles full screen during video; **F11** also works;
+  **Esc** leaves full screen first.
+
+### Codec support
+
+| Item | Status |
+| --- | --- |
+| Primary verified video path | H.264 in MP4 / MKV |
+| Windows video decoding | System Media Foundation, synchronous software decoding |
+| macOS video decoding | VideoToolbox H.264 / HEVC (progressive, 8-bit 4:2:0 SDR); H.264 covered by real-file tests |
+| Unsupported codecs | Return a clear error; no silent fallback to another decoder backend |
+| Audio decoding | MP3, AAC, FLAC, ALAC, PCM and Opus via system decoders; macOS also provides Vorbis; Windows Vorbis has a separate narrow fallback |
+| Dolby | Depends on installed system components |
+
+The table reflects the repository's remdia integration docs (main branch) and
+describes current source builds; published releases may use the earlier backend.
+
+### Known seeking limitations
+
+- Remote elementary MPEG audio uses approximate byte/duration seeking (to avoid
+  scanning a missing download prefix); VBR accuracy is limited by that estimate.
+  Local audio and timestamped containers keep precise seek paths.
+- On Windows, MF FLAC decoding currently pre-rolls from the beginning, so seek
+  latency in long files can grow with the target position.
+
+## Shortcuts
+
+| Shortcut | Action |
+| --- | --- |
+| Space | Pause/resume playback |
+| Left / Right | Seek during playback; turn pages in the comic reader |
+| M | Mute/unmute |
+| F11 | Toggle full screen |
+| Esc | Leave full screen before other back actions |
+| F / double-click | Toggle full screen during video playback |
+
+## Common failures
+
+| Symptom | Fix |
+| --- | --- |
+| Video reports an unsupported codec | Check container and codec: the main path is MP4/MKV + H.264; other combinations may be unsupported |
+| Long wait after seeking | See the known seeking limitations above for remote MPEG audio and Windows FLAC |
+| Video plays without sound | Check the M mute state and the system output device; Dolby content depends on system components |
+| More troubleshooting | See the [FAQ](/en/guides/faq/) |

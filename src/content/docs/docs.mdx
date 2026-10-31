@@ -1,0 +1,58 @@
+---
+title: 文档
+description: Pordo 使用文档入口：安装、音乐、视频、漫画、AI 与云同步指南。
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="note" title="内容核对依据">
+本站文档依据 pordo 仓库 main 分支 `893459a` 与 v0.5.1 发布资料于 2026-10-31 核对。
+发布版本与主分支的差异会在相应页面注明。
+</Aside>
+
+Pordo 是一个把音乐、视频和漫画放在同一个应用里的媒体工具：Windows 与 macOS
+桌面端提供完整功能，Android 端提供音乐、漫画与云同步。你可以按需连接
+AI 服务（字幕、歌词、漫画翻译）和自己的 WebDAV 网盘。
+
+## 从哪里开始
+
+1. [安装与更新](/guides/install-update/)：选择适合你平台的安装包，了解更新方式与 macOS 签名状态。
+2. [开始使用](/guides/getting-started/)：安装后的第一次打开文件、基本操作和平台差异。
+3. 按需要阅读下面的功能指南。
+
+也可以直接前往[下载页](/download/)获取当前版本的安装包。
+
+## 指南目录
+
+| 指南 | 内容 | 适用平台 |
+| --- | --- | --- |
+| [开始使用](/guides/getting-started/) | 首次使用、打开文件、基本操作 | Windows · macOS · Android |
+| [安装与更新](/guides/install-update/) | 包类型、系统要求、更新与迁移 | Windows · macOS · Android |
+| [音乐与视频](/guides/music-video/) | 本地播放、队列、收藏、歌词、快捷键 | Windows · macOS |
+| [在线音源](/guides/online-music/) | 音源设置、播放与下载、sidecar 文件 | Windows · macOS |
+| [漫画阅读](/guides/comics/) | 书源、书架、阅读方向、Komiic 账号、缓存 | Windows · macOS · Android |
+| [AI 字幕、歌词与翻译](/guides/ai/) | 服务商设置、字幕导出、数据发送与计费 | Windows · macOS |
+| [WebDAV 云同步](/guides/webdav-sync/) | 配置、同步范围、API Key 加密、冲突处理 | Windows · macOS · Android |
+| [磁力链接播放](/guides/magnet/) | 磁力任务、边下边播、缓存与网络问题 | Windows · macOS |
+| [Android 客户端](/guides/android/) | 安装、签名更新、功能范围与限制 | Android |
+| [常见问题](/guides/faq/) | 播放、书源、AI、更新与同步问题排查 | 全部 |
+
+## 平台能力简表
+
+“—”表示当前版本未提供该功能，或尚未核实。
+
+| 功能 | Windows x64 | macOS 15+ | Android 9+ arm64 |
+| --- | --- | --- | --- |
+| 音乐播放与收藏 | 支持 | 支持 | 支持 |
+| 视频播放 | 支持 | 支持 | — |
+| 漫画阅读与书架 | 支持 | 支持 | 支持 |
+| 在线音源 | 支持 | 支持 | — |
+| 磁力链接播放 | 支持 | 支持 | — |
+| AI 字幕 | 支持 | 支持 | — |
+| AI 歌词 | 支持 | 支持 | — |
+| 漫画翻译 | 支持 | 支持 | — |
+| WebDAV 同步 | 支持 | 支持 | 支持 |
+
+## 开发者
+
+构建、架构、发布与 remdia SDK 资料以仓库文档为准，见[开发者索引](/developers/)。

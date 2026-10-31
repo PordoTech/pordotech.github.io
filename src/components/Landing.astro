@@ -1,0 +1,208 @@
+---
+import '../styles/landing.css';
+import { landingText } from '../lib/i18n';
+import {
+  PORDO_RELEASES_URL,
+  PORDO_ISSUES_URL,
+  PORDO_DOCS,
+  REMDIA_REPO_URL,
+  GITHUB_ORG_URL,
+} from '../lib/site';
+
+interface Props {
+  lang: 'zh' | 'en';
+}
+
+const { lang } = Astro.props;
+// 统一为以 / 结尾，便于直接拼接子路径
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const zh = lang === 'zh';
+const t = landingText(lang);
+
+const homeHref = zh ? base : `${base}en/`;
+const downloadHref = zh ? `${base}download/` : `${base}en/download/`;
+const docsHref = zh ? `${base}docs/` : `${base}en/docs/`;
+const developersHref = zh ? `${base}developers/` : `${base}en/developers/`;
+const gettingStartedHref = zh
+  ? `${base}guides/getting-started/`
+  : `${base}en/guides/getting-started/`;
+const langHref = zh ? `${base}en/` : base;
+const alternateHref = zh ? `${base}en/` : base;
+
+const year = new Date().getFullYear();
+
+// 注意：frontmatter 内不要写 JSX（如 <svg>…</svg>）。Astro 7.4.x 的 compiler-rs
+// 遇到 frontmatter JSX 会跳过 TS 剥离，随后 vite-plugin-import-meta-env 以
+// lang:"js" 解析残留的 interface 等 TS 语法并直接 PARSE_ERROR。图标改用字符串 + set:html。
+const svgAttrs =
+  'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"';
+
+const icons: Record<string, string> = {
+  music: `<svg ${svgAttrs}><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg>`,
+  video: `<svg ${svgAttrs}><rect x="2" y="4" width="20" height="16" rx="3" /><path d="M10 9.2v5.6l4.8-2.8z" fill="currentColor" stroke="none" /></svg>`,
+  comics: `<svg ${svgAttrs}><path d="M12 6.5C10 5 7.5 4.4 4 4.4v13.2c3.5 0 6 .6 8 2.1 2-1.5 4.5-2.1 8-2.1V4.4c-3.5 0-6 .6-8 2.1z" /><path d="M12 6.5v13.2" /></svg>`,
+};
+---
+
+<html lang={zh ? 'zh-CN' : 'en'}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{t.pageTitle}</title>
+    <meta name="description" content={t.pageDesc} />
+    <link rel="icon" type="image/png" href={`${base}images/pordo-icon-256.png`} />
+    <link rel="alternate" hreflang={zh ? 'zh-CN' : 'en'} href={homeHref} />
+    <link rel="alternate" hreflang={zh ? 'en' : 'zh-CN'} href={alternateHref} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{t.skipToContent}</a>
+
+    <!-- 顶部导航：Logo / Pordo、下载、文档、remdia、GitHub、语言切换 -->
+    <nav class="nav" aria-label={zh ? '主导航' : 'Main navigation'}>
+      <div class="wrap nav-inner">
+        <a class="brand" href={homeHref}>
+          <img src={`${base}images/pordo-mark-256.png`} alt="" width="32" height="32" />
+          <span>Pordo</span>
+        </a>
+        <div class="nav-links">
+          <a href={downloadHref}>{t.navDownload}</a>
+          <a href={docsHref}>{t.navDocs}</a>
+          <a href={REMDIA_REPO_URL} target="_blank" rel="noopener">{t.navRemdia}</a>
+          <a href="https://github.com/PordoTech/pordo" target="_blank" rel="noopener">GitHub</a>
+          <a class="lang-switch" href={langHref} aria-label={t.langSwitchAria}>{t.langLabel}</a>
+          <a class="nav-cta" href={downloadHref}>{t.navDownload}</a>
+        </div>
+      </div>
+    </nav>
+
+    <main id="main">
+      <!-- 首屏（深炭色） -->
+      <header class="hero">
+        <div class="wrap hero-inner">
+          <img class="hero-logo" src={`${base}images/pordo-logo-512.png`} alt={t.heroLogoAlt} width="108" height="108" />
+          <p class="hero-badge">{t.heroBadge}</p>
+          <h1>{t.heroH1}<span class="highlight">{t.heroH1Highlight}</span></h1>
+          <p class="lead">{t.heroLead}</p>
+          <div class="cta-row">
+            <a class="btn btn-mint" href={downloadHref}>{t.ctaDownload}</a>
+            <a class="btn btn-ghost" href={gettingStartedHref}>{t.ctaStart}</a>
+          </div>
+        </div>
+      </header>
+
+      <!-- 三个使用场景：音乐 / 视频 / 漫画，各自标明适用平台 -->
+      <section class="section wrap" id="scenarios" aria-labelledby="scenarios-title">
+        <div class="center">
+          <span class="section-kicker">{t.scenariosKicker}</span>
+          <h2 id="scenarios-title">{t.scenariosTitle}</h2>
+          <p class="sub">{t.scenariosSub}</p>
+        </div>
+        <div class="scenario-grid">
+          {t.scenarios.map((scenario) => (
+            <article class="scenario-card">
+              <!-- 图标字符串为本站内置静态 SVG，非用户输入，set:html 安全 -->
+              <span class="scenario-icon" set:html={icons[scenario.icon]}></span>
+              <h3>{scenario.title}</h3>
+              <p class="scenario-tagline">{scenario.tagline}</p>
+              <p class="platform-tag">{scenario.platforms}</p>
+              <ul class="scenario-items">
+                {scenario.items.map((item) => (
+                  <li>
+                    <h4>{item.title}</h4>
+                    <p>{item.text}</p>
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <!-- 可选连接：AI 与 WebDAV（含数据发送与计费提示） -->
+      <section class="section wrap" id="connect" aria-labelledby="connect-title">
+        <div class="center">
+          <h2 id="connect-title">{t.aiSyncTitle}</h2>
+        </div>
+        <div class="duo-grid">
+          <article class="duo-card">
+            <h3>{t.aiCardTitle}</h3>
+            <p>{t.aiCardText}</p>
+          </article>
+          <article class="duo-card">
+            <h3>{t.syncCardTitle}</h3>
+            <p>{t.syncCardText}</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- 平台能力简表 -->
+      <section class="section wrap" id="platforms" aria-labelledby="platforms-title">
+        <div class="center">
+          <h2 id="platforms-title">{t.matrixTitle}</h2>
+        </div>
+        <div class="matrix-wrap" tabindex="0" role="region" aria-label={t.matrixTitle}>
+          <table class="matrix">
+            <thead>
+              <tr>
+                {t.matrixHead.map((cell) => <th scope="col">{cell}</th>)}
+              </tr>
+            </thead>
+            <tbody>
+              {t.matrixRows.map((row) => (
+                <tr>
+                  <th scope="row">{row.feature}</th>
+                  {row.support.map((supported) => (
+                    <td class={supported ? 'yes' : 'no'}>
+                      {supported ? (
+                        <span aria-label={t.matrixYes}>✓</span>
+                      ) : (
+                        <span aria-label={zh ? '未提供或未核实' : 'Not provided or not verified'}>{t.matrixNo}</span>
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="matrix-note">{t.matrixNote}</p>
+      </section>
+
+      <!-- remdia 简介与开发者入口 -->
+      <section class="wrap" id="remdia" aria-labelledby="remdia-title">
+        <div class="remdia-card">
+          <img class="remdia-logo" src={`${base}images/pordo-icon-256.png`} alt="" width="120" height="120" aria-hidden="true" />
+          <div class="remdia-body">
+            <h2 id="remdia-title">{t.remdiaTitle}</h2>
+            <p>{t.remdiaText}</p>
+            <div class="remdia-links">
+              <a class="btn btn-primary" href={developersHref}>{t.remdiaDocsBtn}</a>
+              <a class="btn btn-ghost" href={REMDIA_REPO_URL} target="_blank" rel="noopener">{t.remdiaGithubBtn} ↗</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 底部行动呼吁 -->
+      <section class="section wrap">
+        <div class="banner">
+          <h2>{t.bannerH2}</h2>
+          <p>{t.bannerP}</p>
+          <a class="btn btn-primary" href={downloadHref}>{t.ctaDownload}</a>
+        </div>
+      </section>
+    </main>
+
+    <!-- 页脚：Releases、问题反馈、第三方许可入口 -->
+    <footer class="footer">
+      <div class="wrap footer-inner">
+        <span>{t.footerCopy.replace('{year}', String(year))}</span>
+        <a href={docsHref}>{t.footerDocs}</a>
+        <a href={PORDO_RELEASES_URL} target="_blank" rel="noopener">{t.footerReleases}</a>
+        <a href={PORDO_ISSUES_URL} target="_blank" rel="noopener">{t.footerIssues}</a>
+        <a href={PORDO_DOCS.thirdParty} target="_blank" rel="noopener">{t.footerLicenses}</a>
+        <span class="right"><a href={GITHUB_ORG_URL} target="_blank" rel="noopener">github.com/PordoTech</a></span>
+      </div>
+    </footer>
+  </body>
+</html>

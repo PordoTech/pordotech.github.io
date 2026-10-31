@@ -1,0 +1,68 @@
+/* Starlight 文档主题定制：与首页一致的薄荷绿/蓝绿色品牌，明暗主题。
+   不改版式结构，只覆写颜色变量与少量排版细节。 */
+
+:root {
+  /* 亮色模式 */
+  --sl-color-accent-low: #e2fbf1;
+  --sl-color-accent: #1c87a6;
+  --sl-color-accent-high: #0c5f7c;
+  --sl-color-white: #14252a;
+  --sl-color-gray-1: #2c4147;
+  --sl-color-gray-2: #47616a;
+  --sl-color-gray-3: #7b939a;
+  --sl-color-gray-4: #b9ccc6;
+  --sl-color-gray-5: #dcebe4;
+  --sl-color-gray-6: #f2f8f5;
+  --sl-color-black: #fbfdfc;
+
+  --sl-font: system-ui, -apple-system, 'Segoe UI', Roboto, 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
+  --sl-font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', Consolas,
+    'Liberation Mono', monospace;
+}
+
+:root[data-theme='dark'] {
+  --sl-color-accent-low: #16302a;
+  --sl-color-accent: #4db8d6;
+  --sl-color-accent-high: #a6fae0;
+  --sl-color-white: #e6efec;
+  --sl-color-gray-1: #d3e0dc;
+  --sl-color-gray-2: #a2b6b3;
+  --sl-color-gray-3: #6e857f;
+  --sl-color-gray-4: #3a4d52;
+  --sl-color-gray-5: #26383d;
+  --sl-color-gray-6: #131f22;
+  --sl-color-black: #0e1719;
+}
+
+/* 表格：允许独立横向滚动，正文不随之溢出 */
+.sl-markdown-content table {
+  display: block;
+  overflow-x: auto;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 20px 0;
+}
+
+.sl-markdown-content th,
+.sl-markdown-content td {
+  padding: 9px 14px;
+  border: 1px solid var(--sl-color-gray-5);
+  vertical-align: middle;
+}
+
+.sl-markdown-content th {
+  background: var(--sl-color-gray-6);
+  font-weight: 600;
+}
+
+.sl-markdown-content td code {
+  font-size: 12.5px;
+  word-break: break-all;
+}
+
+.sl-markdown-content blockquote {
+  border-left-color: var(--sl-color-accent);
+}
